@@ -144,15 +144,37 @@ def the_samaya(NEWS_LIMIT):
         news_links.append(link['href'])
         news_headlines.append(str(link.text.encode('ascii','ignore')))
     return
+
+def toi(NEWS_LIMIT):
     
+    url_ToI='http://timesofindia.indiatimes.com/'
+    
+    page_ToI=requests.get(url_ToI)
+    soup_ToI=BeautifulSoup(page_ToI.text)
+    section=soup_ToI.findAll('ul', attrs={'data-vr-zone':'latest', 'class':'list9'})[0]
+    return [str(link.text.encode('ascii','ignore')) for link in section.findAll('a')[:NEWS_LIMIT] if (str(link.text.encode('ascii','ignore'))) and not('Adv:'in str(link.text.encode('ascii','ignore')))]
+    
+def the_hindu(NEWS_LIMIT):
+    
+    url_TheHindu='http://www.thehindu.com/news/?service=rss'
+    
+    page_TheHindu=requests.get(url_TheHindu)
+    soup_TheHindu=BeautifulSoup(page_TheHindu.text)
+    
+    return [str(item.findAll('title')[0].text.encode('ascii','ignore')) for item in soup_TheHindu.findAll('item')[:NEWS_LIMIT]]    
+
 if __name__ == '__main__':
-    print('___NEWS FROM REDDIT.COM___')
-    reddit_news(10)
-    print('___THE NEW INDIAN EXPRESS ODISHA___')
-    new_IE_odia(10)
-    print('___OTV NEWS___')
-    otv_news(10)
-    print('___OTV Trending___')
-    otv_trending(10)
-    print('___THE SAMAYA___')
-    the_samaya(10)
+    #print('___NEWS FROM REDDIT.COM___')
+    #reddit_news(10)
+    #print('___THE NEW INDIAN EXPRESS ODISHA___')
+    #new_IE_odia(10)
+    #print('___OTV NEWS___')
+    #otv_news(10)
+    #print('___OTV Trending___')
+    #otv_trending(10)
+    #print('___THE SAMAYA___')
+    #the_samaya(10)
+    #print('___THE TIMES OF INDIA___')
+    #print(toi(20))
+    #print('___THE HINDU___')
+    #print(the_hindu(20))
