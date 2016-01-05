@@ -68,25 +68,6 @@ def reddit_news(NEWS_LIMIT):
                 print_news(topic.url, 'title')
     return 0
     
-def new_IE_odia(NEWS_LIMIT):
-    
-    urlIEO='http://www.newindianexpress.com/states/odisha/'
-    
-    news_links=[]
-    
-    page=requests.get(urlIEO)
-    soup=BeautifulSoup(page.text)
-    content=soup.find('div', attrs={'class':'content'})
-    links=content.findAll('a')
-    #Make a list of the URLs
-    for link in links:
-        news_links.append(link['href'])
-    
-    #Print the news articles using summarize
-    for link in news_links[:NEWS_LIMIT]:
-        print_news(link, 'title')
-    return
-
 def otv_news(NEWS_LIMIT):
     #http://www.odishatv.in/category/odisha/
     urlOTV='http://www.odishatv.in/'
@@ -102,12 +83,12 @@ def otv_news(NEWS_LIMIT):
         for section in sub_section:
             links.append(section.find('a'))
     
-    news_headlines=[]
+    otv_headlines=[]
     
     for link in links[:NEWS_LIMIT]:
-        print('\t* '+str(link['title'].encode('ascii', 'ignore')))
-        news_headlines.append(link['title'].encode('ascii', 'ignore'))
-    return
+        #print('\t* '+str(link['title'].encode('ascii', 'ignore')))
+        otv_headlines.append(str(link['title'].encode('ascii', 'ignore')))
+    return otv_headlines
 
 def otv_trending(NEWS_LIMIT):
     #http://www.odishatv.in/category/odisha/
@@ -122,9 +103,9 @@ def otv_trending(NEWS_LIMIT):
     
     for link in links[:NEWS_LIMIT]:
         if str(link.text.encode('ascii', 'ignore')):
-            print('\t* '+str(link.text.encode('ascii', 'ignore')))
-            news_headlines.append(link.text.encode('ascii', 'ignore'))
-    return
+            #print('\t* '+str(link.text.encode('ascii', 'ignore')))
+            news_headlines.append(str(link.text.encode('ascii', 'ignore')))
+    return news_headlines
 
 def the_samaya(NEWS_LIMIT):
     
@@ -140,19 +121,10 @@ def the_samaya(NEWS_LIMIT):
     news_headlines=[]
     
     for link in links[:NEWS_LIMIT]:
-        print('\t* '+str(link.text.encode('ascii','ignore')))
-        news_links.append(link['href'])
+        #print('\t* '+str(link.text.encode('ascii','ignore')))
+        #news_links.append(link['href'])
         news_headlines.append(str(link.text.encode('ascii','ignore')))
-    return
-
-def toi(NEWS_LIMIT):
-    
-    url_ToI='http://timesofindia.indiatimes.com/'
-    
-    page_ToI=requests.get(url_ToI)
-    soup_ToI=BeautifulSoup(page_ToI.text)
-    section=soup_ToI.findAll('ul', attrs={'data-vr-zone':'latest', 'class':'list9'})[0]
-    return [str(link.text.encode('ascii','ignore')) for link in section.findAll('a')[:NEWS_LIMIT] if (str(link.text.encode('ascii','ignore'))) and not('Adv:'in str(link.text.encode('ascii','ignore')))]
+    return news_headlines
 
 def news_from_rss(rss_url, NEWS_LIMIT):
     '''
@@ -165,7 +137,7 @@ def news_from_rss(rss_url, NEWS_LIMIT):
     
     for item in rss_soup.findAll('item')[:NEWS_LIMIT]:
         headline=str(item.findAll('title')[0].text.encode('ascii','ignore'))
-        if headline and headline[-1]!='?':
+        if headline and headline[-1]!='?' and (not(headline in news_headlines)):
             try:
                 if len(headline)<=20:                #If headline is too short go for the description
                     headline=str(item.findAll('description')[0].text.encode('ascii','ignore'))
@@ -176,6 +148,16 @@ def news_from_rss(rss_url, NEWS_LIMIT):
             NEWS_LIMIT+=1
     
     return news_headlines
+
+def toi(NEWS_LIMIT):
+    
+    url_ToI='http://timesofindia.feedsportal.com/c/33039/f/533916/index.rss'
+    
+    #page_ToI=requests.get(url_ToI)
+    #soup_ToI=BeautifulSoup(page_ToI.text)
+    #section=soup_ToI.findAll('ul', attrs={'data-vr-zone':'latest', 'class':'list9'})[0]
+    #return [str(link.text.encode('ascii','ignore')) for link in section.findAll('a')[:NEWS_LIMIT] if (str(link.text.encode('ascii','ignore'))) and not('Adv:'in str(link.text.encode('ascii','ignore')))]
+    return news_from_rss(url_ToI, NEWS_LIMIT)
     
 def the_hindu(NEWS_LIMIT):
     
@@ -199,24 +181,29 @@ def zee_news(NEWS_LIMIT):
     
     return news_from_rss(url_zn, NEWS_LIMIT)
 
+def new_IE_odia(NEWS_LIMIT):
+    
+    urlIEO='http://www.newindianexpress.com/states/odisha/?widgetName=rssfeed&widgetId=534391&getXmlFeed=true'
+    return news_from_rss(urlIEO, NEWS_LIMIT)
+    
 if __name__ == '__main__':
     #print('___NEWS FROM REDDIT.COM___')
-    #reddit_news(10)
-    #print('___THE NEW INDIAN EXPRESS ODISHA___')
-    #new_IE_odia(10)
-    #print('___OTV NEWS___')
-    #otv_news(10)
+    #reddit_news(4)
+    print('___THE NEW INDIAN EXPRESS ODISHA___')
+    print(new_IE_odia(4))
+    print('___OTV NEWS___')
+    print(otv_news(4))
     #print('___OTV Trending___')
-    #otv_trending(10)
-    #print('___THE SAMAYA___')
-    #the_samaya(10)
+    #otv_trending(4)
+    print('___THE SAMAYA___')
+    print(the_samaya(4))
     #print('___THE TIMES OF INDIA___')
-    #print(toi(20))
+    #print(toi(4))
     #print('___THE HINDU___')
-    #print(the_hindu(10))
+    #print(the_hindu(4))
     #print('___Business Standard___')
-    #print(business_standard(10))
+    #print(business_standard(4))
     #print('___Indian Express: India___')
-    #print(ie_India(10))
-    print('___Zee News___')
-    print(zee_news(10))
+    #print(ie_India(4))
+    #print('___Zee News___')
+    #print(zee_news(4))
