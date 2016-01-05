@@ -153,15 +153,51 @@ def toi(NEWS_LIMIT):
     soup_ToI=BeautifulSoup(page_ToI.text)
     section=soup_ToI.findAll('ul', attrs={'data-vr-zone':'latest', 'class':'list9'})[0]
     return [str(link.text.encode('ascii','ignore')) for link in section.findAll('a')[:NEWS_LIMIT] if (str(link.text.encode('ascii','ignore'))) and not('Adv:'in str(link.text.encode('ascii','ignore')))]
+
+def news_from_rss(rss_url, NEWS_LIMIT):
+    '''
+    Just pass on the RSS URL & the number of items to fetch, it'll do the rest. No need to write modules for each URL.
+    '''
+    rss_page=requests.get(rss_url)
+    rss_soup=BeautifulSoup(rss_page.text)
+    
+    news_headlines=[]
+    
+    for item in rss_soup.findAll('item')[:NEWS_LIMIT]:
+        headline=str(item.findAll('title')[0].text.encode('ascii','ignore'))
+        if headline and headline[-1]!='?':
+            try:
+                if len(headline)<=20:                #If headline is too short go for the description
+                    headline=str(item.findAll('description')[0].text.encode('ascii','ignore'))
+                news_headlines.append(headline)
+            except:
+                continue
+        else:
+            NEWS_LIMIT+=1
+    
+    return news_headlines
     
 def the_hindu(NEWS_LIMIT):
     
     url_TheHindu='http://www.thehindu.com/news/?service=rss'
     
-    page_TheHindu=requests.get(url_TheHindu)
-    soup_TheHindu=BeautifulSoup(page_TheHindu.text)
+    return news_from_rss(url_TheHindu, NEWS_LIMIT)
     
-    return [str(item.findAll('title')[0].text.encode('ascii','ignore')) for item in soup_TheHindu.findAll('item')[:NEWS_LIMIT]]    
+def business_standard(NEWS_LIMIT):
+    
+    url_BS='http://www.business-standard.com/rss/latest.rss'
+    
+    return news_from_rss(url_BS, NEWS_LIMIT)
+    
+def ie_India(NEWS_LIMIT):
+    url_IEI='http://indianexpress.com/section/india/feed/'
+    
+    return news_from_rss(url_IEI, NEWS_LIMIT)
+
+def zee_news(NEWS_LIMIT):
+    url_zn='http://zeenews.india.com/rss/india-national-news.xml'
+    
+    return news_from_rss(url_zn, NEWS_LIMIT)
 
 if __name__ == '__main__':
     #print('___NEWS FROM REDDIT.COM___')
@@ -177,4 +213,10 @@ if __name__ == '__main__':
     #print('___THE TIMES OF INDIA___')
     #print(toi(20))
     #print('___THE HINDU___')
-    #print(the_hindu(20))
+    #print(the_hindu(10))
+    #print('___Business Standard___')
+    #print(business_standard(10))
+    #print('___Indian Express: India___')
+    #print(ie_India(10))
+    print('___Zee News___')
+    print(zee_news(10))
