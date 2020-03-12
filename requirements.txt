@@ -17,7 +17,7 @@ nltk==3.1
 numpy==1.10.2
 oauthlib==1.0.3
 praw==3.3.0
-psutil==1.2.1
+psutil==5.6.6
 pyOpenSSL==0.15.1
 pyasn1==0.1.9
 pycups==1.9.66
