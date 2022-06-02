@@ -9,7 +9,7 @@ decorator==4.0.6
 defer==1.0.6
 docopt==0.6.2
 goose-extractor==1.0.25
-html5lib==0.999
+html5lib==0.99999999
 jieba==0.38
 lxml==3.5.0
 ndg-httpsclient==0.4.0
